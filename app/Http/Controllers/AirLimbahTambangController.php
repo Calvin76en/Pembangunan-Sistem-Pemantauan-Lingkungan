@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AirLimbahTambang;
-<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 
-=======
->>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
 use App\Models\Location;
 use Illuminate\Http\Request;
 
@@ -104,7 +101,6 @@ class AirLimbahTambangController extends Controller
     }
 
     // Fungsi untuk mengedit data limbah
-<<<<<<< HEAD
     public function edit_limbah(Request $request, $location_id)
     {
         // Cari data limbah terbaru berdasarkan location_id
@@ -140,20 +136,6 @@ class AirLimbahTambangController extends Controller
         $monitoring_type = $monitoringType->monitoring_types;
         $monitoring_id = $location->monitoring_id;
 
-=======
-    public function edit_limbah(Request $request, $id)
-    {
-        // Ambil data berdasarkan ID
-        $data_limbah = AirLimbahTambang::findOrFail($id);
-
-        // Ambil data lokasi dan monitoring type
-        $location_id = $data_limbah->location_id;
-        $location_name = $data_limbah->location->location_name; // Asumsi ada relasi 'location'
-        $monitoring_type = $data_limbah->monitoringType->monitoring_types; // Asumsi ada relasi 'monitoringType'
-        $monitoring_id = $data_limbah->monitoring_id; // Ambil monitoring_id dari data limbah
-
-        // Kirim data ke view
->>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
         return view('mip.limbah-tambang', compact('data_limbah', 'location_id', 'location_name', 'monitoring_type', 'monitoring_id'));
     }
 

@@ -32,14 +32,14 @@ Route::middleware(['Role:admin'])->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'indexAdmin'])->name('admin.dashboard');
 
-    // Maintain User
+    // === MAINTAIN USER ===
     Route::get('/maintainuser', [MaintainUserController::class, 'index'])->name('admin.maintainuser');
     Route::post('/store-user', [MaintainUserController::class, 'store'])->name('admin.storeuser');
     Route::get('/edit-user/{id}', [MaintainUserController::class, 'edit'])->name('admin.edituser');
     Route::put('/update-user/{user_id}', [MaintainUserController::class, 'update'])->name('admin.updateuser');
     Route::delete('/delete-user/{id}', [MaintainUserController::class, 'destroy'])->name('admin.deleteuser');
 
-    // Maintain Lokasi
+    // === MAINTAIN LOKASI ===
     Route::get('/maintainlokasi', [MaintainLokasiController::class, 'maintainlokasi'])->name('admin.maintainlokasi');
     Route::post('/store-lokasi', [MaintainLokasiController::class, 'store'])->name('admin.storelokasi');
     Route::get('/edit-lokasi/{location_id}', [MaintainLokasiController::class, 'edit'])->name('admin.editlokasi');
@@ -49,72 +49,95 @@ Route::middleware(['Role:admin'])->prefix('admin')->group(function () {
 
 // Routes for MIP Role
 Route::middleware(['Role:mip'])->group(function () {
-
     Route::get('/mip-dashboard', [DashboardController::class, 'indexMip'])->name('mip.dashboard');
 
-    // Pemantauan Lokasi
     Route::get('/lokasi-limbah', [PemantauanController::class, 'lokasiLimbah'])->name('lokasi-limbah');
     Route::get('/lokasi-oilfuel', [PemantauanController::class, 'lokasioilfuel'])->name('lokasi-oilfuel');
-    Route::get('/lokasi-debu', [DebuController::class, 'lokasiDebu'])->name('lokasi-debu');
 
-    // Limbah Tambang Routes
-    Route::get('/tambah-limbah', [AirLimbahTambangController::class, 'tambah_limbah'])->name('tambah.limbah');
-    Route::post('/store-limbah', [AirLimbahTambangController::class, 'store_limbah'])->name('store.limbah');
-    Route::get('/edit-limbah/{id}', [AirLimbahTambangController::class, 'edit_limbah'])->name('edit.limbah');
-    Route::put('/update-limbah/{id}', [AirLimbahTambangController::class, 'update_limbah'])->name('update.limbah');
-    Route::get('/limbah/edit/{location_id}', [AirLimbahTambangController::class, 'edit_limbah'])->name('limbah.edit'); // Jika diperlukan
-
-    // Oilfuel Trap Routes
-    Route::get('/tambah-oilfuel', [OilTrapFuelTrapController::class, 'tambah_oilfuel'])->name('tambah.oilfuel');
-    Route::post('/store-oilfuel', [OilTrapFuelTrapController::class, 'store_oilfuel'])->name('store.oilfuel');
+    // Add/Edit Routes for Oilfuel and Air Limbah
     Route::get('/edit-oilfuel', [OilTrapFuelTrapController::class, 'edit_oilfuel'])->name('edit.oilfuel');
+    Route::get('/edit-limbah', [AirLimbahTambangController::class, 'tambah_limbah'])->name('edit.limbah');
 
-    // Curah Hujan Routes
-    Route::get('/tambah-curah', [CurahHujanController::class, 'tambah_curah'])->name('tambah.curah');
-    Route::post('/store-curah', [CurahHujanController::class, 'store_curah'])->name('store.curah');
+    // Store Routes for Limba, Oilfuel, etc.
+    Route::post('/store-limbah', [AirLimbahTambangController::class, 'store_limbah'])->name('store.limbah');
+    Route::get('/tambah-limbah', [AirLimbahTambangController::class, 'tambah_limbah'])->name('tambah.limbah');
+    Route::post('/store-oilfuel', [OilTrapFuelTrapController::class, 'store_oilfuel'])->name('store.oilfuel');
+    Route::get('/tambah-oilfuel', [OilTrapFuelTrapController::class, 'tambah_oilfuel'])->name('tambah.oilfuel');
+
+    // Update Routes for Limbah
+    Route::post('/update-limbah', [AirLimbahTambangController::class, 'update_limbah'])->name('update.limbah');
+    Route::get('/lokasi-limbah', [AirLimbahTambangController::class, 'lokasiLimbah'])->name('lokasi-limbah');
+
+    // Route edit curah hujan (akan redirect ke method tambah_curah agar form bisa terisi data lama)
     Route::get('/edit-curah', [CurahHujanController::class, 'edit_curah'])->name('edit.curah');
+
+    // Route update data curah hujan (method PUT)
     Route::put('/update-curah/{id}', [CurahHujanController::class, 'update_curah'])->name('update.curah');
 
-    // Debu Routes
-    Route::get('/tambah-debu', [DebuController::class, 'tambah_debu'])->name('tambah.debu');
-    Route::post('/store-debu', [DebuController::class, 'store_debu'])->name('store.debu');
-    Route::get('/edit-debu', [DebuController::class, 'tambah_debu'])->name('edit.debu'); // Apakah ini form edit atau tambah?
-    Route::put('/update-debu/{id}', [DebuController::class, 'update_debu'])->name('update.debu');
-    Route::put('/debu/update/{id}', [DebuController::class, 'update'])->name('update.debu'); // Ada duplikat update, pastikan fungsi di controller benar
+    Route::get('/edit-limbah/{id}', [AirLimbahTambangController::class, 'edit_limbah'])->name('edit.limbah');
+    Route::put('/update-limbah/{id}', [AirLimbahTambangController::class, 'update_limbah'])->name('update.limbah');
 
-    Route::get('/debu/form', [DebuController::class, 'tambah_debu'])->name('form.debu'); // Duplikat dengan /tambah-debu?
+    Route::get('/lokasi-debu', [DebuController::class, 'lokasiDebu'])->name('lokasi-debu');
+    Route::get('/tambah-debu', [DebuController::class, 'tambah_debu'])->name('tambah.debu');
+    Route::get('/edit-debu', [DebuController::class, 'tambah_debu'])->name('edit.debu');  // <<< ini tambahan
+    Route::post('/store-debu', [DebuController::class, 'store_debu'])->name('store.debu');
+    Route::put('/update-debu/{id}', [DebuController::class, 'update_debu'])->name('update.debu');
+    Route::get('/limbah/edit/{location_id}', [AirLimbahTambangController::class, 'edit_limbah'])->name('edit.limbah');
+    Route::put('/limbah/update/{id}', [AirLimbahTambangController::class, 'update_limbah'])->name('update.limbah');
+
+
     
 });
 
-// Routes for Other Roles (mitra_kerja, supervisor)
+// Routes for Other Monitoring Types
 Route::middleware(['Role:mitra_kerja'])->group(function () {
-    // Tambahkan rute khusus untuk mitra_kerja jika diperlukan
+    // Add routes specific for 'mitra_kerja' Role if needed
 });
 
 Route::middleware(['Role:supervisor'])->group(function () {
-    // Tambahkan rute khusus untuk supervisor jika diperlukan
+    // Add routes specific for 'supervisor' Role if needed
 });
 
-// Public Routes for Monitoring Data
+// Routes for Various Monitoring Types
 Route::get('/curah-hujan', [PemantauanController::class, 'curahHujan'])->name('curah-hujan');
 Route::get('/debu', [PemantauanController::class, 'debu'])->name('debu');
 Route::get('/kebisingan', [PemantauanController::class, 'kebisingan'])->name('kebisingan');
 Route::get('/limbah-tambang', [PemantauanController::class, 'limbahTambang'])->name('limbah-tambang');
 Route::get('/oilfuel-trap', [PemantauanController::class, 'oilfuelTrap'])->name('oilfuel-trap');
 
-// Routes for Location Lists
+// Routes for Locations (e.g. curah hujan, debu, etc.)
 Route::get('/lokasi-curah', [PemantauanController::class, 'lokasiCurah'])->name('lokasi-curah');
+Route::get('/lokasi-debu', [PemantauanController::class, 'lokasiDebu'])->name('lokasi-debu');
 Route::get('/lokasi-kebisingan', [PemantauanController::class, 'lokasiKebisingan'])->name('lokasi-kebisingan');
 
-// Monitoring Type Routes
+// Routes for Monitoring Types
 Route::get('/monitoring-types', [MonitoringTypeController::class, 'index'])->name('monitoring-types.index');
 Route::get('/monitoring-types/{id}', [MonitoringTypeController::class, 'show'])->name('monitoring-types.show');
 
-// Monitoring Data Index Routes
+// Additional Monitoring Routes
 Route::get('/air-limbah-tambang', [AirLimbahTambangController::class, 'index'])->name('air-limbah-tambang');
 Route::get('/curah-hujan', [CurahHujanController::class, 'index'])->name('curah-hujan');
 Route::get('/oil-trap-fuel-trap', [OilTrapFuelTrapController::class, 'index'])->name('oil-trap-fuel-trap');
 Route::get('/debu', [DebuController::class, 'index'])->name('debu');
 Route::get('/kebisingan', [KebisinganController::class, 'index'])->name('kebisingan');
 
-// Admin User Management (duplicate removed, merged into admin prefix)
+// Routes for Adding New Entries (Limbah, OilFuel, Curah, Debu, Kebisingan)
+Route::get('/tambah-oilfuel', [OilTrapFuelTrapController::class, 'tambah_oilfuel'])->name('tambah.oilfuel');
+Route::post('/store-oilfuel', [OilTrapFuelTrapController::class, 'store_oilfuel'])->name('store.oilfuel');
+
+Route::get('/tambah-curah', [CurahHujanController::class, 'tambah_curah'])->name('tambah.curah');
+Route::post('/store-curah', [CurahHujanController::class, 'store_curah'])->name('store.curah');
+
+Route::get('/tambah-debu', [DebuController::class, 'tambah_debu'])->name('tambah.debu');
+Route::post('/store-debu', [DebuController::class, 'store_debu'])->name('store.debu');
+
+Route::get('/tambah-kebisingan', [KebisinganController::class, 'tambah_kebisingan'])->name('tambah.kebisingan');
+Route::post('/store-kebisingan', [KebisinganController::class, 'store_kebisingan'])->name('store.kebisingan');
+
+// Admin Routes for User Management
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/maintain-user', [MaintainUserController::class, 'index'])->name('admin.maintainuser');
+    Route::get('/edit-user/{id}', [MaintainUserController::class, 'edit'])->name('admin.edituser');
+    Route::post('/update-user/{id}', [MaintainUserController::class, 'update'])->name('admin.updateuser');
+    Route::delete('/delete-user/{id}', [MaintainUserController::class, 'destroy'])->name('admin.deleteuser');
+});

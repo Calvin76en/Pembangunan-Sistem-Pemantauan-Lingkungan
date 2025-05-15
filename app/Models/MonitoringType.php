@@ -22,7 +22,3 @@ class MonitoringType extends Model
         return $this->hasMany(Location::class, 'monitoring_id', 'monitoring_id');  // Relasi dengan monitoring_id
     }
 }
-
-        return $this->hasMany(Location::class, 'monitoring_id', 'id');  // Ganti 'monitoring_id' menjadi 'id'
-    }
-}

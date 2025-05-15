@@ -19,24 +19,15 @@ class AirLimbahTambang extends Model
         'monitoring_id', 'location_id'
     ];
 
-
     // Relasi ke Location
-
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
 
-
     // Relasi ke MonitoringType
-
     public function monitoringType()
     {
         return $this->belongsTo(MonitoringType::class, 'monitoring_id');
     }
-
 }
-
-}
-
-
