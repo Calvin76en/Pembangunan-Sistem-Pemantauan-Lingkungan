@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateOilTrapFuelTrapTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('oil_trap_fuel_trap', function (Blueprint $table) {
+            $table->id();
+            $table->float('ph');
+            $table->unsignedBigInteger('monitoring_id'); // Foreign Key
+            $table->unsignedBigInteger('location_id'); // Foreign Key
+            $table->timestamps();
+
+            $table->foreign('monitoring_id')->references('monitoring_id')->on('monitoring_types')->onDelete('cascade');
+            $table->foreign('location_id')->references('location_id')->on('locations')->onDelete('cascade');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('oil_trap_fuel_trap');
+    }
+}
