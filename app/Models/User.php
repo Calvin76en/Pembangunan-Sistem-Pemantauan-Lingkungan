@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+<<<<<<< HEAD
 use App\Models\Post;
 
+=======
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
 
 class User extends Authenticatable
 {

@@ -139,6 +139,7 @@
                   </td>
                   <td class="px-6 py-3 whitespace-nowrap">
                     <div class="flex items-center">
+<<<<<<< HEAD
                       @if($location->keterangan === 'completed')
                       <a href="{{ route('edit.debu', [
       'location_id' => $location->location_id,
@@ -164,6 +165,19 @@
                     </div>
                   </td>
 
+=======
+                      <a href="{{ route('tambah.debu', [
+                                                      'location_id' => $location->location_id,
+                                                      'location_name' => $location->location_name,
+                                                      'monitoring_type' => $location->monitoringType->monitoring_types,
+                                                      'monitoring_id' => $location->monitoringType->monitoring_id
+                                                  ]) }}"
+                        class="btn btn-primary btn-add-event bg-brand-500 hover:bg-brand-600 flex w-full justify-center rounded-lg px-4 py-2.5 text-sm font-medium text-white sm:w-auto">
+                        Add Data +
+                      </a>
+                    </div>
+                  </td>
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
                 </tr>
                 @endforeach
               </tbody>

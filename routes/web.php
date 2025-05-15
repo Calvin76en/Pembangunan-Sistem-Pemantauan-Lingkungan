@@ -77,6 +77,7 @@ Route::middleware(['Role:mip'])->group(function () {
     Route::get('/edit-limbah/{id}', [AirLimbahTambangController::class, 'edit_limbah'])->name('edit.limbah');
     Route::put('/update-limbah/{id}', [AirLimbahTambangController::class, 'update_limbah'])->name('update.limbah');
 
+<<<<<<< HEAD
     Route::get('/lokasi-debu', [DebuController::class, 'lokasiDebu'])->name('lokasi-debu');
     Route::get('/tambah-debu', [DebuController::class, 'tambah_debu'])->name('tambah.debu');
     Route::get('/edit-debu', [DebuController::class, 'tambah_debu'])->name('edit.debu');  // <<< ini tambahan
@@ -87,6 +88,13 @@ Route::middleware(['Role:mip'])->group(function () {
 
 
     
+=======
+    Route::put('/debu/update/{id}', [DebuController::class, 'update'])->name('update.debu');
+
+    Route::get('/debu/form', [DebuController::class, 'tambah_debu'])->name('form.debu');
+    Route::post('/debu/store', [DebuController::class, 'store_debu'])->name('store.debu');
+    Route::get('/lokasi-debu', [DebuController::class, 'lokasiDebu'])->name('lokasi.debu');
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
 });
 
 // Routes for Other Monitoring Types

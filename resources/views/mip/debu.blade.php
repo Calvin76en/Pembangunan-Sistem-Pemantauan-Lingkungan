@@ -142,12 +142,17 @@
             </h3>
           </div>
           <div class="p-5 space-y-6 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+<<<<<<< HEAD
             <form action="{{ isset($data_debu) ? route('update.debu', $data_debu->id) : route('store.debu') }}" method="POST">
               @csrf
               @if(isset($data_debu))
               @method('PUT')
               @endif
 
+=======
+            <form action="{{ route('store.debu') }}" method="POST">
+              @csrf
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
               <div class="-mx-2.5 flex flex-wrap gap-y-5">
                 <!-- Pilihan Waktu -->
                 <div class="w-full px-2.5">
@@ -156,7 +161,12 @@
                   </label>
                   <select
                     name="waktu"
+<<<<<<< HEAD
                     class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+=======
+                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                    required>
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
                     <option value="" disabled {{ old('waktu', optional($data_debu)->waktu) == null ? 'selected' : '' }}>Pilih Waktu Pemantauan</option>
                     <option value="Pagi" {{ old('waktu', optional($data_debu)->waktu) == 'Pagi' ? 'selected' : '' }}>Pagi</option>
                     <option value="Siang" {{ old('waktu', optional($data_debu)->waktu) == 'Siang' ? 'selected' : '' }}>Siang</option>
@@ -171,7 +181,12 @@
                   </label>
                   <select
                     name="status_debu"
+<<<<<<< HEAD
                     class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+=======
+                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                    required>
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
                     <option value="" disabled {{ old('status_debu', optional($data_debu)->status_debu) == null ? 'selected' : '' }}>Pilih Status Debu</option>
                     <option value="ST" {{ old('status_debu', optional($data_debu)->status_debu) == 'ST' ? 'selected' : '' }}>Sangat Tebal</option>
                     <option value="T" {{ old('status_debu', optional($data_debu)->status_debu) == 'T' ? 'selected' : '' }}>Tebal</option>

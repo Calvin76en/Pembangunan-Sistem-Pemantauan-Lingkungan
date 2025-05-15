@@ -109,11 +109,18 @@
                     <div class="flex items-center gap-2">
                       @if ($location->keterangan === 'completed')
                       <!-- Tombol Edit jika status Completed -->
+<<<<<<< HEAD
                       <a href="{{ route('edit.limbah', ['location_id' => $location->location_id]) }}"
                         class="bg-warning-500 hover:bg-warning-600 px-4 py-2.5 text-sm text-white rounded-lg font-medium">
                         Edit
                       </a>
 
+=======
+                      <a href="{{ route('edit.limbah', ['id' => $location->location_id]) }}"
+                        class="bg-warning-500 hover:bg-warning-600 px-4 py-2.5 text-sm text-white rounded-lg font-medium">
+                        Edit
+                      </a>
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
                       @elseif ($location->keterangan === 'draft' || $location->keterangan === 'empty')
                       <!-- Tombol Add Data jika status Draft atau Empty -->
                       <a href="{{ route('tambah.limbah', [
@@ -122,7 +129,11 @@
                         'monitoring_type' => $location->monitoringType->monitoring_types,
                         'monitoring_id' => $location->monitoringType->monitoring_id
                     ]) }}"
+<<<<<<< HEAD
                         class="bg-brand-500 hover:bg-brand-600 px-4 py-2.5 text-sm text-white rounded-lg font-medium">
+=======
+                         class="bg-brand-500 hover:bg-brand-600 px-4 py-2.5 text-sm text-white rounded-lg font-medium">
+>>>>>>> b533741de0b6b313976441ac7d8e8944ed274e0e
                         Add Data +
                       </a>
                       @endif
