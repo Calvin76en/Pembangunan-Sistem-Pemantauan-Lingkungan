@@ -13,8 +13,8 @@
         </button>
     </form>
     <div class="text-center">
-        <h1 class="text-4xl font-bold text-blue-900">Dashboard Admin</h1>
-        <p class="mt-4 text-blue-700">Selamat datang Admin SIPALING!</p>
+        <h1 class="text-4xl font-bold">Dashboard Admin</h1>
+        <p class="mt-4">Selamat datang Admin SIPALING!</p>
     </div>
 </body>
 </html>

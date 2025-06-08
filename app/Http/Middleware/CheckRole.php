@@ -10,12 +10,13 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, $role)
     {
-        // Periksa apakah user sudah login dan memiliki role yang sesuai
-        if (Auth::check() && Auth::user()->role == $role) {
-            return $next($request); // Lanjutkan jika role sesuai
+        // Ensure the user is authenticated and has the correct role_id
+        if (Auth::check() && Auth::user()->role_id == $role) {
+            return $next($request); // Proceed if role matches
         }
 
-        // Jika tidak, redirect ke halaman login atau halaman lain sesuai kebutuhan
+        // Redirect with an error message if the role doesn't match
         return redirect('/login')->withErrors(['role' => 'Access Denied']);
     }
 }
+

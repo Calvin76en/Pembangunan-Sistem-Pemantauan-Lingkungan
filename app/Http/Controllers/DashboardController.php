@@ -37,4 +37,15 @@ class DashboardController extends Controller
         // Kembalikan ke view dengan data yang diperlukan
         return view('mip.dashboard', compact('monitoringTypes', 'locationsCount', 'totalUsers'));
     }
+     // Tambahan method untuk supervisor
+    public function indexSupervisor()
+    {
+        // Contoh data yang sama, bisa disesuaikan jika berbeda kebutuhan
+        $monitoringTypes = MonitoringType::withCount('locations')->get();
+        $locationsCount = Location::where('status', 1)->count();
+        $totalUsers = User::count();
+
+        return view('supervisor.dashboard', compact('monitoringTypes', 'locationsCount', 'totalUsers'));
+    }
+
 }

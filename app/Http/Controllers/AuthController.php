@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Show login form
+    // Menampilkan form login
     public function showLoginForm()
     {
-        return view('auth.login'); // Login view
+        return view('auth.login'); // Menampilkan tampilan login
     }
 
-    // Handle login process
+    // Menangani proses login
     public function login(Request $request)
     {
-        // Validate login credentials
+        // Validasi kredensial login
         $request->validate([
             'nik_user' => 'required',
             'password' => 'required',
@@ -24,48 +24,48 @@ class AuthController extends Controller
 
         $credentials = $request->only('nik_user', 'password');
 
-        // Attempt to authenticate the user
+        // Mencoba mengautentikasi pengguna
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Check if the user account is active
+            // Memeriksa apakah akun pengguna aktif
             if ($user->status == 0) {
                 return redirect()->route('login')
                     ->withErrors(['login_gagal' => 'Akun Anda tidak aktif. Silakan hubungi administrator.']);
             }
 
-            // Redirect based on the user role
-            switch ($user->role) {
-                case 'admin':
+            // Pengalihan berdasarkan role_id
+            switch ($user->role_id) {
+                case 1:
                     return redirect()->route('admin.dashboard');
-                case 'mip':
+                case 2:
                     return redirect()->route('mip.dashboard');
-                case 'mitra_kerja':
+                case 3:
                     return redirect()->route('mitra_kerja.dashboard');
-                case 'supervisor':
+                case 4:
                     return redirect()->route('supervisor.dashboard');
                 default:
-                    // In case of an undefined role
+                    // Jika peran tidak terdefinisi
                     abort(403, 'Unauthorized.');
             }
         }
 
-        // If login failed, return with error message
+        // Jika login gagal, kembali dengan pesan error
         return redirect()->route('login')
             ->withInput()
             ->withErrors(['login_gagal' => 'Username atau Password Anda Salah!']);
     }
 
-    // Handle logout
+    // Menangani proses logout
     public function logout(Request $request)
     {
-        Auth::logout(); // Log the user out
+        Auth::logout(); // Mengeluarkan pengguna
 
-        // Invalidate the session and regenerate CSRF token
+        // Menghapus sesi dan menghasilkan token CSRF baru
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Flash success message
+        // Menampilkan pesan sukses
         $request->session()->flash('success', 'Anda berhasil logout!');
 
         return redirect()->route('login');

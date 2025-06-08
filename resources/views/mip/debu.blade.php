@@ -4,219 +4,424 @@
 
 <!-- ===== Main Content Start ===== -->
 <main>
-  <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+  <div class="mx-auto max-w-7xl p-6">
     <!-- Breadcrumb Start -->
     <div x-data="{ pageName: `Form Debu`}">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h2
-          class="text-xl font-semibold text-gray-800 dark:text-white/90"
-          x-text="pageName"></h2>
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
         <nav>
-          <ol class="flex items-center gap-1.5">
+          <ol class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
             <li>
-              <a
-                class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-                href="index.html">
+              <a href="{{ route('mip-lokasi-debu') }}" class="inline-flex items-center gap-1.5 hover:underline transition-colors">
                 Home
-                <svg
-                  class="stroke-current"
-                  width="17"
-                  height="16"
-                  viewBox="0 0 17 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
-                    stroke=""
-                    stroke-width="1.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round" />
+                <svg class="stroke-current" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </a>
             </li>
             <li>
-              <a
-                class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-                href="lokasi-debu.html">
+              <a href="{{ route('mip-lokasi-debu', ['date' => $selectedDate]) }}" class="inline-flex items-center gap-1.5 hover:underline transition-colors">
                 Lokasi Pemantauan
-                <svg
-                  class="stroke-current"
-                  width="17"
-                  height="16"
-                  viewBox="0 0 17 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
-                    stroke=""
-                    stroke-width="1.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round" />
+                <svg class="stroke-current" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </a>
             </li>
-            <li
-              class="text-sm text-gray-800 dark:text-white/90"
-              x-text="pageName"></li>
+            <li class="text-gray-800 dark:text-white/90" x-text="pageName"></li>
           </ol>
         </nav>
       </div>
     </div>
 
-    <!-- ====== Form Layouts Section Start -->
+    <!-- Main Form Card -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <form id="debuForm" action="{{ (isset($data_debu) && $data_debu) ? route('update.debu', $data_debu->id) : route('store.debu') }}" method="POST" onsubmit="return handleFormSubmit(event)">
+        @csrf
+        @if(isset($data_debu) && $data_debu)
+        @method('PUT')
+        @endif
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <!-- Card Informasi Lokasi Pemantauan Debu -->
-      <div class="space-y-6">
-        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-          <div class="px-5 py-4 sm:px-6 sm:py-5">
-            <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-              Informasi Lokasi Pemantauan Debu
-            </h3>
-            <p>
-              @if (session('success'))
-            <div class="mt-6 rounded-xl border-l-4 border-green-600 bg-green-100 px-6 py-4 shadow-lg dark:bg-green-950 dark:border-green-500 dark:text-green-100 animate-fade-in">
-              <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0">
-                  <svg class="h-6 w-6 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <!-- Hidden Fields -->
+        <input type="hidden" name="selectedDate" value="{{ $selectedDate }}">
+        <input type="hidden" name="location_id" value="{{ $location_id }}">
+        <input type="hidden" name="monitoring_id" value="{{ $monitoring_id }}">
+
+        <!-- Form Header -->
+        <div class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <!-- <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13h1M4 13H3m12.364-6.364l-.707-.707M5.343 5.343l-.707-.707m12.728 0l-.707.707M5.343 16.657l-.707.707M12 3a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+              </div> -->
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Form Monitoring Debu</h3>
+                <p class="text-gray-600 dark:text-gray-400">Tanggal: {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Form Body -->
+        <div class="px-8 py-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Informasi Lokasi Pemantauan -->
+            <div class="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 border border-orange-200 dark:border-gray-600">
+              <div class="flex items-center mb-6">
+                <!-- <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                   </svg>
+                </div> -->
+                <h4 class="text-lg font-semibold text-orange-700 dark:text-orange-300">Informasi Lokasi</h4>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lokasi</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                    </div>
+                    <input type="text" value="{{ $location_name }}" readonly
+                      class="pl-10 h-12 w-full rounded-xl border border-gray-300 bg-white/50 dark:bg-gray-800/50 dark:text-white/90 px-4 py-3 text-sm font-medium cursor-not-allowed" />
+                  </div>
                 </div>
-                <div class="flex-1 text-sm font-medium text-green-800 dark:text-green-100">
-                  {{ session('success') }}
+
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Pemantauan</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                      </svg>
+                    </div>
+                    <input type="text" value="{{ $monitoring_type }}" readonly
+                      class="pl-10 h-12 w-full rounded-xl border border-gray-300 bg-white/50 dark:bg-gray-800/50 dark:text-white/90 px-4 py-3 text-sm font-medium cursor-not-allowed" />
+                  </div>
                 </div>
               </div>
             </div>
-            @endif
-            </p>
-          </div>
-          <div class="p-5 space-y-6 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-            <form>
-              <div class="-mx-2.5 flex flex-wrap gap-y-5">
-                <div class="w-full px-2.5 xl:w-1/2">
-                  <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-white/80">
-                    ID Lokasi
-                  </label>
-                  <input
-                    type="text"
-                    value="{{ $location_id }}"
-                    readonly
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-white/90" />
-                </div>
 
-                <div class="w-full px-2.5 xl:w-1/2">
-                  <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-white/80">
-                    Nama Lokasi
-                  </label>
-                  <input
-                    type="text"
-                    value="{{ $location_name }}"
-                    readonly
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-white/90" />
-                </div>
-
-                <div class="w-full px-2.5">
-                  <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-white/80">
-                    Tipe Pemantauan
-                  </label>
-                  <input
-                    type="text"
-                    value="{{ $monitoring_type }}"
-                    readonly
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-white/90" />
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card Form Input Pemantauan Debu -->
-      <div class="space-y-6">
-        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-          <div class="px-5 py-4 sm:px-6 sm:py-5">
-            <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-              Form Input Pemantauan Debu
-            </h3>
-          </div>
-          <div class="p-5 space-y-6 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-            <form action="{{ isset($data_debu) ? route('update.debu', $data_debu->id) : route('store.debu') }}" method="POST">
-              @csrf
-              @if(isset($data_debu))
-              @method('PUT')
-              @endif
-
-              <div class="-mx-2.5 flex flex-wrap gap-y-5">
-                <!-- Pilihan Waktu -->
-                <div class="w-full px-2.5">
-                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Waktu
-                  </label>
-                  <select
-                    name="waktu"
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                    <option value="" disabled {{ old('waktu', optional($data_debu)->waktu) == null ? 'selected' : '' }}>Pilih Waktu Pemantauan</option>
-                    <option value="Pagi" {{ old('waktu', optional($data_debu)->waktu) == 'Pagi' ? 'selected' : '' }}>Pagi</option>
-                    <option value="Siang" {{ old('waktu', optional($data_debu)->waktu) == 'Siang' ? 'selected' : '' }}>Siang</option>
-                    <option value="Sore" {{ old('waktu', optional($data_debu)->waktu) == 'Sore' ? 'selected' : '' }}>Sore</option>
-                  </select>
-                </div>
-
-                <!-- Pilihan Status Debu -->
-                <div class="w-full px-2.5">
-                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Status Debu
-                  </label>
-                  <select
-                    name="status_debu"
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                    <option value="" disabled {{ old('status_debu', optional($data_debu)->status_debu) == null ? 'selected' : '' }}>Pilih Status Debu</option>
-                    <option value="ST" {{ old('status_debu', optional($data_debu)->status_debu) == 'ST' ? 'selected' : '' }}>Sangat Tebal</option>
-                    <option value="T" {{ old('status_debu', optional($data_debu)->status_debu) == 'T' ? 'selected' : '' }}>Tebal</option>
-                    <option value="M" {{ old('status_debu', optional($data_debu)->status_debu) == 'M' ? 'selected' : '' }}>Minim</option>
-                    <option value="SM" {{ old('status_debu', optional($data_debu)->status_debu) == 'SM' ? 'selected' : '' }}>Sangat Minim</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Hidden Fields -->
-              <input type="hidden" name="location_id" value="{{ $location_id }}">
-              <input type="hidden" name="monitoring_id" value="{{ $monitoring_id }}">
-
-
-              <div class="w-full px-2.5">
-                <button
-                  type="submit"
-                  class="flex items-center mt-6 justify-center w-full gap-2 p-3 text-sm font-medium text-white transition-colors rounded-lg bg-brand-500 hover:bg-brand-600">
-                  Simpan Data
-                  <svg
-                    class="fill-current"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M4.98481 2.44399C3.11333 1.57147 1.15325 3.46979 1.96543 5.36824L3.82086 9.70527C3.90146 9.89367 3.90146 10.1069 3.82086 10.2953L1.96543 14.6323C1.15326 16.5307 3.11332 18.4291 4.98481 17.5565L16.8184 12.0395C18.5508 11.2319 18.5508 8.76865 16.8184 7.961L4.98481 2.44399ZM3.34453 4.77824C3.0738 4.14543 3.72716 3.51266 4.35099 3.80349L16.1846 9.32051C16.762 9.58973 16.762 10.4108 16.1846 10.68L4.35098 16.197C3.72716 16.4879 3.0738 15.8551 3.34453 15.2223L5.19996 10.8853C5.21944 10.8397 5.23735 10.7937 5.2537 10.7473L9.11784 10.7473C9.53206 10.7473 9.86784 10.4115 9.86784 9.99726C9.86784 9.58304 9.53206 9.24726 9.11784 9.24726L5.25157 9.24726C5.2358 9.20287 5.2186 9.15885 5.19996 9.11528L3.34453 4.77824Z" />
+            <!-- Form Input Data Debu -->
+            <div class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 border border-amber-200 dark:border-gray-600">
+              <div class="flex items-center mb-6">
+                <!-- <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center mr-3">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                   </svg>
-                </button>
+                </div> -->
+                <h4 class="text-lg font-semibold text-amber-700 dark:text-amber-300">Data Monitoring Debu</h4>
               </div>
-            </form>
+
+              <div class="space-y-5">
+                <!-- Waktu Pemantauan -->
+                <div>
+                  <label class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Waktu Pemantauan <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <select name="waktu"
+                      class="pl-12 h-14 w-full rounded-xl border-2 border-gray-300 bg-white dark:bg-gray-800 px-4 py-3 text-lg font-semibold text-gray-800 dark:text-white/90 shadow-sm focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 focus:outline-none transition-all duration-200 hover:border-gray-400 @error('waktu') border-red-500 @enderror">
+                      <option value="">Pilih Waktu Pemantauan</option>
+                      <option value="Pagi" {{ old('waktu', (isset($data_debu) && $data_debu) ? $data_debu->waktu : '') == 'Pagi' ? 'selected' : '' }}>
+                        Pagi (06:00 - 11:00)
+                      </option>
+                      <option value="Siang" {{ old('waktu', (isset($data_debu) && $data_debu) ? $data_debu->waktu : '') == 'Siang' ? 'selected' : '' }}>
+                        Siang (11:00 - 15:00)
+                      </option>
+                      <option value="Sore" {{ old('waktu', (isset($data_debu) && $data_debu) ? $data_debu->waktu : '') == 'Sore' ? 'selected' : '' }}>
+                        Sore (15:00 - 18:00)
+                      </option>
+                    </select>
+                  </div>
+                  @error('waktu')
+                  <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ $message }}
+                  </p>
+                  @enderror
+                </div>
+
+                <!-- Status Debu -->
+                <div>
+                  <label class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Status Debu <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <select name="status_debu"
+                      class="pl-12 h-14 w-full rounded-xl border-2 border-gray-300 bg-white dark:bg-gray-800 px-4 py-3 text-lg font-semibold text-gray-800 dark:text-white/90 shadow-sm focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 focus:outline-none transition-all duration-200 hover:border-gray-400 @error('status_debu') border-red-500 @enderror">
+                      <option value="">Pilih Status Debu</option>
+                      <option value="ST" {{ old('status_debu', (isset($data_debu) && $data_debu) ? $data_debu->status_debu : '') == 'ST' ? 'selected' : '' }}>
+                        Sangat Tebal (ST)
+                      </option>
+                      <option value="T" {{ old('status_debu', (isset($data_debu) && $data_debu) ? $data_debu->status_debu : '') == 'T' ? 'selected' : '' }}>
+                        Tebal (T)
+                      </option>
+                      <option value="M" {{ old('status_debu', (isset($data_debu) && $data_debu) ? $data_debu->status_debu : '') == 'M' ? 'selected' : '' }}>
+                        Minim (M)
+                      </option>
+                      <option value="SM" {{ old('status_debu', (isset($data_debu) && $data_debu) ? $data_debu->status_debu : '') == 'SM' ? 'selected' : '' }}>
+                        Sangat Minim (SM)
+                      </option>
+                    </select>
+                  </div>
+                  @error('status_debu')
+                  <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ $message }}
+                  </p>
+                  @enderror
+                </div>
+              </div>
+
+              @if(isset($data_debu) && $data_debu)
+              <p class="mt-4 text-xs text-amber-600 dark:text-amber-400 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                Data sudah ada dan dapat diubah jika diperlukan
+              </p>
+              @else
+              <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                Pilih waktu pemantauan dan status debu yang sesuai
+              </p>
+              @endif
+            </div>
           </div>
         </div>
-      </div>
+
+        <!-- Form Footer -->
+        <div class="px-8 py-6 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+
+            </div>
+
+            <div class="flex gap-3">
+              <a href="{{ route('mip-lokasi-debu', ['date' => $selectedDate]) }}"
+                class="inline-flex items-center px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Kembali
+              </a>
+
+              <button type="submit"
+                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-500/30 focus:ring-offset-2">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {{ (isset($data_debu) && $data_debu) ? 'Update Data' : 'Simpan Data' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-
-
-    <!-- ====== Form Layouts Section End -->
   </div>
-
-
 </main>
-
+<!-- ===== Main Content End ===== -->
 
 @endsection
+
+@push('scripts')
+<!-- Sweet Alert 2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // Handle form submission dengan SweetAlert
+  function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('debuForm');
+    const waktuInput = form.querySelector('select[name="waktu"]');
+    const statusDebuInput = form.querySelector('select[name="status_debu"]');
+
+    const waktuValue = waktuInput.value;
+    const statusDebuValue = statusDebuInput.value;
+
+    // Validasi minimal satu field harus diisi
+    if (!waktuValue || !statusDebuValue) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal!',
+        text: 'Harap pilih waktu pemantauan dan status debu',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#ef4444',
+        timer: 3000,
+        timerProgressBar: true
+      });
+      return false;
+    }
+
+    // Tampilkan loading
+    Swal.fire({
+      title: 'Menyimpan Data...',
+      html: 'Mohon tunggu sebentar',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Submit form dengan delay untuk simulasi
+    setTimeout(() => {
+      // Tampilkan success popup
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Data berhasil disimpan',
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        willClose: () => {
+          // Submit form setelah popup ditutup
+          form.submit();
+        }
+      });
+    }, 1000);
+
+    return false;
+  }
+
+  // Jika ada session success dari server
+  @if(session('success'))
+  document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: '{{ session('
+      success ') }}',
+      timer: 3000,
+      showConfirmButton: false,
+      timerProgressBar: true,
+      position: 'top-end',
+      toast: true,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
+    });
+  });
+  @endif
+
+  // Jika ada session error dari server
+  @if(session('error'))
+  document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: '{{ session('
+      error ') }}',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#ef4444',
+      position: 'center',
+      showClass: {
+        popup: 'animate__animated animate__shakeX'
+      }
+    });
+  });
+  @endif
+</script>
+@endpush
+
+@push('styles')
+<style>
+  /* Animate.css integration for SweetAlert */
+  @keyframes animate__fadeInDown {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes animate__fadeOutUp {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(0, -100%, 0);
+    }
+  }
+
+  @keyframes animate__shakeX {
+
+    from,
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translate3d(-10px, 0, 0);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translate3d(10px, 0, 0);
+    }
+  }
+
+  .animate__animated {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+  }
+
+  .animate__fadeInDown {
+    animation-name: animate__fadeInDown;
+  }
+
+  .animate__fadeOutUp {
+    animation-name: animate__fadeOutUp;
+  }
+
+  .animate__shakeX {
+    animation-name: animate__shakeX;
+  }
+
+  /* Custom SweetAlert styling */
+  .swal2-popup {
+    border-radius: 1rem !important;
+  }
+
+  .swal2-timer-progress-bar {
+    background: linear-gradient(to right, #f97316, #f59e0b) !important;
+  }
+</style>
+@endpush

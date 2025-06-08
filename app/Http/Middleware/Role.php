@@ -7,15 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Role
+class Roles
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  mixed  ...$roles
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // Pastikan user sudah login
@@ -23,7 +16,7 @@ class Role
             return redirect('login');
         }
 
-        $userRole = Auth::user()->role;
+        $userRole = Auth::user()->role; // Pastikan ini sesuai dengan kolom yang ada di tabel pengguna
 
         // Cek apakah role pengguna termasuk dalam salah satu role yang diberikan
         if (in_array($userRole, $roles)) {

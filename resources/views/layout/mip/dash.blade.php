@@ -12,10 +12,16 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>
-        Basic Tables | TailAdmin - Tailwind CSS Admin Dashboard Template
+        SIPALING
     </title>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
     <link rel="icon" href="favicon.ico">
     <link href="{{ asset('assets\css\style.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -118,11 +124,19 @@
 </head>
 
 <body
-    x-data="{  page: '{{ Request::segment(1) }}', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-data="{  
+        page: '{{ Route::currentRouteName() }}', 
+        'loaded': true, 
+        'darkMode': false, 
+        'stickyMenu': false, 
+        'sidebarToggle': false, 
+        'scrollTop': false 
+    }"
     x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
     :class="{'dark bg-gray-900': darkMode === true}">
+
     <!-- ===== Preloader Start ===== -->
     <div
         x-show="loaded"
@@ -131,7 +145,6 @@
         <div
             class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
     </div>
-
     <!-- ===== Preloader End ===== -->
 
     <!-- ===== Page Wrapper Start ===== -->
@@ -141,11 +154,12 @@
             :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full'"
             class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 lg:static lg:translate-x-0 dark:border-gray-800 dark:bg-black"
             @click.outside="sidebarToggle = false">
+
             <!-- SIDEBAR HEADER -->
             <div
                 :class="sidebarToggle ? 'justify-center' : 'justify-between'"
                 class="sidebar-header flex items-center gap-2 pt-8 pb-7">
-                <a href="{{ route('mip.dashboard') }}">
+                <a href="{{ route('mip.dashboard') }}" class="flex flex-col items-center">
                     <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
                         <img class="dark:hidden" src="{{ asset('assets/images/logo/sipaling.jpg') }}" alt="Logo" />
                         <img class="hidden dark:block" src="{{ asset('assets/images/logo/auth-logo.svg') }}" alt="Logo" />
@@ -155,18 +169,38 @@
                         class="logo-icon"
                         :class="sidebarToggle ? 'lg:block' : 'hidden'"
                         src="{{ asset('assets/images/logo/sipaling.jpg') }}"
-                        alt="ab" />
+                        alt="Logo" />
+
+                    <!-- Teks Sistem Pemantauan Lingkungan -->
+                    <div
+                        class="mt-2 text-center leading-tight"
+                        :class="sidebarToggle ? 'hidden' : ''">
+                        <div class="text-sm font-semibold">
+                            <span style="color: rgba(159, 197, 78, 1);">Sistem</span>
+                            <span class="text-gray-700 dark:text-gray-200 ml-1">Pemantauan Lingkungan</span>
+                        </div>
+                    </div>
                 </a>
             </div>
-
-
-
             <!-- SIDEBAR HEADER -->
 
             <div
                 class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
                 <!-- Sidebar Menu -->
-                <nav x-data="{selected: $persist('Dashboard')}">
+                <nav x-data="{
+                    selected: $persist(
+                        (() => {
+                            // Tentukan menu mana yang harus terbuka berdasarkan route
+                            const currentRoute = '{{ Route::currentRouteName() }}';
+                            const formRoutes = ['mip-lokasi-limbah', 'lokasi-oilfuel', 'lokasi-curah', 'mip-lokasi-debu', 'lokasi-kebisingan'];
+                            
+                            if (formRoutes.includes(currentRoute)) {
+                                return 'Forms';
+                            }
+                            return 'Dashboard';
+                        })()
+                    )
+                }">
                     <!-- Menu Group -->
                     <div>
                         <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
@@ -196,66 +230,75 @@
                             <!-- Menu Item Dashboard -->
                             <li>
                                 <a
-                                    href="{{ route('dashboard') }}"
+                                    href="{{ route('mip.dashboard') }}"
                                     class="menu-item group"
-                                    :class="(page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'">
+                                    :class="(page === 'mip.dashboard') ? 'menu-item-active' : 'menu-item-inactive'">
                                     <svg
-                                        :class="(page === 'dashboard') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                        :class="(page === 'mip.dashboard') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
                                         width="24"
                                         height="24"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            fill-rule="evenodd"
-                                            clip-rule="evenodd"
-                                            d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z"
-                                            fill="" />
+                                        <rect
+                                            x="3"
+                                            y="3"
+                                            width="7"
+                                            height="7"
+                                            rx="1"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            fill="none" />
+                                        <rect
+                                            x="14"
+                                            y="3"
+                                            width="7"
+                                            height="7"
+                                            rx="1"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            fill="none" />
+                                        <rect
+                                            x="3"
+                                            y="14"
+                                            width="7"
+                                            height="7"
+                                            rx="1"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            fill="none" />
+                                        <rect
+                                            x="14"
+                                            y="14"
+                                            width="7"
+                                            height="7"
+                                            rx="1"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            fill="none" />
                                     </svg>
 
                                     <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                        Dashboard
+                                        Beranda
                                     </span>
                                 </a>
-
-                                <!-- Dropdown Menu Start -->
-                                <div
-                                    class="translate transform overflow-hidden"
-                                    :class="(selected === 'Dashboard') ? 'block' :'hidden'">
-                                    <ul
-                                        :class="sidebarToggle ? 'lg:hidden' : 'flex'"
-                                        class="menu-dropdown mt-2 flex flex-col gap-1 pl-9">
-
-
-                                        <li>
-                                            <a
-                                                class="menu-dropdown-item group"
-                                                href="marketing.html"
-                                                :class="page === 'marketing' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                                Marketing
-                                                <span class="absolute right-3 flex items-center gap-1">
-
-                                                </span>
-                                            </a>
-                                        </li>
-
-                                    </ul>
-                                </div>
-                                <!-- Dropdown Menu End -->
                             </li>
-
                             <!-- Menu Item Dashboard -->
-
 
                             <!-- Menu Item Forms -->
                             <li>
+                                @php
+                                $formRoutes = ['mip-lokasi-limbah', 'lokasi-oilfuel', 'lokasi-curah', 'mip-lokasi-debu', 'lokasi-kebisingan'];
+                                $isFormActive = in_array(Route::currentRouteName(), $formRoutes);
+                                @endphp
+
                                 <a
                                     href="#"
                                     @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
                                     class="menu-item group"
-                                    :class=" (selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-active' : 'menu-item-inactive'">
+                                    :class="@json($isFormActive) ? 'menu-item-active' : 'menu-item-inactive'">
                                     <svg
-                                        :class="(selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                                        :class="@json($isFormActive) ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
                                         width="24"
                                         height="24"
                                         viewBox="0 0 24 24"
@@ -293,44 +336,82 @@
 
                                 <!-- Dropdown Menu Start -->
                                 <div x-show="selected === 'Forms'" class="translate transform overflow-hidden">
-                                <ul class="menu-dropdown mt-2 flex flex-col gap-1 pl-9">
-                                    <!-- Menu Items with Active Class Based on Page -->
-                                    <li>
-                                        <a href="{{ route('lokasi-limbah') }}" class="menu-dropdown-item group" :class="(page === 'limbah-Tambang') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                            Air Limbah Tambang
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('lokasi-oilfuel') }}" class="menu-dropdown-item group" :class="(page === 'oiltrap') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                            Oil Trap & Fuel Trap
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('lokasi-curah') }}" class="menu-dropdown-item group" :class="(page === 'curah-hujan') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                            Curah Hujan
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('lokasi-debu') }}" class="menu-dropdown-item group" :class="(page === 'debu') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                            Debu
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('lokasi-kebisingan') }}" class="menu-dropdown-item group" :class="(page === 'Kebisingan') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                            Kebisingan
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                                    <ul class="menu-dropdown mt-2 flex flex-col gap-1 pl-9">
+                                        <!-- Menu Items with Active Class Based on Page -->
+                                        <li>
+                                            <a href="{{ route('mip-lokasi-limbah') }}"
+                                                class="menu-dropdown-item group"
+                                                :class="(page === 'mip-lokasi-limbah') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                                Air Limbah Tambang
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('lokasi-oilfuel') }}"
+                                                class="menu-dropdown-item group"
+                                                :class="(page === 'lokasi-oilfuel') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                                Oil Trap & Fuel Trap
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('lokasi-curah') }}"
+                                                class="menu-dropdown-item group"
+                                                :class="(page === 'lokasi-curah') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                                Curah Hujan
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('mip-lokasi-debu') }}"
+                                                class="menu-dropdown-item group"
+                                                :class="(page === 'mip-lokasi-debu') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                                Debu
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('lokasi-kebisingan') }}"
+                                                class="menu-dropdown-item group"
+                                                :class="(page === 'lokasi-kebisingan') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                                Kebisingan
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                                 <!-- Dropdown Menu End -->
                             </li>
-                            <!-- Menu Item Forms -->
+
+                            <!-- Menu Item Print Report -->
+                            <li>
+                                <a
+                                    href="{{ route('print.report') }}"
+                                    class="menu-item group"
+                                    :class="(page === 'print.report') ? 'menu-item-active' : 'menu-item-inactive'">
+                                    <svg
+                                        :class="(page === 'print.report') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6v-8Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            fill="none" />
+                                        <circle cx="17" cy="11" r="1" stroke="currentColor" stroke-width="1" fill="none" />
+                                    </svg>
+
+                                    <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                        Cetak Laporan
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- Menu Item Print Report -->
                         </ul>
                     </div>
                 </nav>
             </div>
         </aside>
-
         <!-- ===== Sidebar End ===== -->
 
         <!-- ===== Content Area Start ===== -->
@@ -430,14 +511,11 @@
                             </svg>
                         </button>
                         <!-- Application nav menu button -->
-
-
                     </div>
 
                     <div
                         :class="menuToggle ? 'flex' : 'hidden'"
                         class="w-full items-center justify-between gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none">
-
 
                         <!-- User Area -->
                         <div
@@ -448,7 +526,6 @@
                                 class="flex items-center text-gray-700 dark:text-gray-400"
                                 href="#"
                                 @click.prevent="dropdownOpen = ! dropdownOpen">
-
 
                                 <span class="mr-1 block text-theme-sm font-medium">
                                     {{ Auth::user()->name }}
@@ -490,8 +567,8 @@
 
                                 <ul
                                     class="flex flex-col gap-1 border-b border-gray-200 pb-3 pt-4 dark:border-gray-800">
-
                                 </ul>
+
                                 <form action="{{ route('logout') }}" method="POST" class="inline">
                                     @csrf
                                     <button
@@ -514,7 +591,6 @@
                                         Sign out
                                     </button>
                                 </form>
-
                             </div>
                             <!-- Dropdown End -->
                         </div>
@@ -536,6 +612,17 @@
         integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
         data-cf-beacon='{"rayId":"93535a1dbe5cffe4","version":"2025.4.0-1-g37f21b1","r":1,"serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"67f7a278e3374824ae6dd92295d38f77","b":1}'
         crossorigin="anonymous"></script>
+    <!-- existing scripts -->
+    <script data-cfasync="false" src="cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script defer src="{{ asset('assets/js/bundle.js') }}"></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/…"></script>
+
+    @stack('scripts')
+
+</body>
+
+</html>
+
 </body>
 
 <!-- Mirrored from demo.tailadmin.com/carousel by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 24 Apr 2025 05:56:09 GMT -->

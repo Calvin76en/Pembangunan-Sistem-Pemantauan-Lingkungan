@@ -7,168 +7,227 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-
-
 use Illuminate\Support\Facades\Auth;
 
 class MaintainUserController extends Controller
 {
     public function index()
     {
-        // Check if the logged-in user is an admin
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->route('home')->withErrors(['error' => 'You do not have permission to access this page.']);
+        // Cek apakah pengguna yang login adalah admin
+        if (Auth::user()->role_id !== 1) {
+            return redirect()->route('admin.dashboard')->withErrors(['error' => 'You do not have permission to access this page.']);
         }
 
+        // Ambil data pengguna berdasarkan NIK_user dan role_id
         $users = DB::table('users')
-                    ->select('user_id', 'NIK_user', 'name', 'email', 'role', 'status')
-                    ->orderBy('user_id', 'asc')
-                    ->get();
+            ->join('roles', 'users.role_id', '=', 'roles.id_role')
+            ->select('users.NIK_user', 'users.name', 'users.email', 'roles.role_name', 'users.status', 'users.role_id')
+            ->orderBy('users.NIK_user', 'asc')
+            ->get();
 
-        $totalData = $users->count();
+        // Ambil data role dari tabel roles untuk dropdown pilihan role
+        // Jika sudah ada admin, maka role admin tidak ditampilkan di dropdown untuk user baru
+        $adminCount = DB::table('users')->where('role_id', 1)->where('status', 1)->count();
+        
+        if ($adminCount > 0) {
+            // Jika sudah ada admin, exclude role admin dari dropdown
+            $roles = DB::table('roles')
+                ->select('id_role', 'role_name')
+                ->where('id_role', '!=', 1) // Exclude admin role
+                ->get();
+        } else {
+            // Jika belum ada admin, tampilkan semua role
+            $roles = DB::table('roles')
+                ->select('id_role', 'role_name')
+                ->get();
+        }
 
-        // Ambil data role yang ada dari database
-        $roles = DB::table('users')
-                    ->select('role')
-                    ->distinct() // Menampilkan hanya role yang unik
-                    ->get();
-
-        // Kirimkan data users, totalData, dan roles ke view
-        return view('admin.maintainuser', compact('users', 'totalData', 'roles'));
+        // Kirimkan data pengguna dan roles ke view
+        return view('admin.maintainuser', compact('users', 'roles'));
     }
 
-
-    // Log informasi saat fungsi store dipanggil
-    // Log::info('Store method called', [
-    //     'NIK_user' => $request->NIK_user,
-    //     'name' => $request->name,
-    //     'email' => $request->email,
-    // ]);
-
-    // Validasi data yang diterima dari form
+    // Store the new user
     public function store(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'NIK_user' => 'required|string|max:255|unique:users',
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users',
-        'password' => 'required|string|min:6', // Confirm password memastikan ada konfirmasi
-        'role' => 'required|string|in:admin,mip,mitra_kerja,supervisor',
-        'status' => 'required|in:0,1',
-    ]);
-
-    // Membuat user baru
-    $user = User::create([
-        'NIK_user' => $request->NIK_user,
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password), // Enkripsi password
-        'role' => $request->role,
-        'status' => $request->status,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    // Menambahkan data ke model JenisStatus terkait dengan User
-    // Redirect ke halaman utama dengan pesan sukses jika berhasil
-    return redirect()->route('admin.maintainuser')->with('success', 'User and JenisStatus added successfully!');
-}
-
-// Log jika validasi berhasil
-// Log::info('User data validated successfully.');
-
-// Menyimpan data ke database
-// try {
-//     DB::table('users')->insert([
-//         'NIK_user' => $request->NIK_user,
-//         'name' => $request->name,
-//         'email' => $request->email,
-//         'password' => Hash::make($request->password),
-//         'role' => $request->role,
-//         'status' => $request->status,
-//         'created_at' => now(),
-//         'updated_at' => now(),
-//     ]);
-
-//     // Log::info('User added successfully', [
-//     //     'user_id' => $request->NIK_user,
-//     //     'role' => $request->role,
-//     // ]);
-
-//     return redirect()->route('admin.maintainuser')->with('success', 'User added successfully!');
-// } catch (\Exception $e) {
-//     // // Log error jika terjadi kesalahan saat memasukkan data
-//     // Log::error('Error adding user: ' . $e->getMessage());
-//     return back()->withErrors(['error' => 'Failed to add user.']);
-// }
-
-    public function edit($id)
     {
-        // Check if the logged-in user is an admin
-        if (Auth::user()->role !== 'admin') {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required|string|max:255|unique:users,name',
+                'email' => 'required|email|max:255|unique:users,email',
+                'password' => 'required|string|min:6',
+                'role' => 'required|exists:roles,id_role',
+                'status' => 'required|in:0,1',
+            ]);
+
+            // Cek jika role yang dipilih adalah admin (role_id = 1)
+            if ($request->role == 1) {
+                // Cek apakah sudah ada admin aktif di sistem
+                $activeAdminCount = DB::table('users')
+                    ->where('role_id', 1)
+                    ->where('status', 1)
+                    ->count();
+
+                if ($activeAdminCount > 0) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Tidak dapat menambahkan admin baru. Sistem hanya mengizinkan satu admin aktif.');
+                }
+            }
+
+            // Generate NIK_user otomatis berdasarkan NIK terakhir
+            $lastNIK = DB::table('users')->max('NIK_user');
+            $newNIK = $lastNIK ? $lastNIK + 1 : 1; // Jika belum ada user, mulai dari 1
+
+            // Insert user baru
+            DB::table('users')->insert([
+                'NIK_user' => $newNIK,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $request->role,
+                'status' => $request->status,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->route('admin.maintainuser')->with('success', 'User berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            Log::error('Error creating user: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menambahkan user: ' . $e->getMessage());
+        }
+    }
+
+    // Edit user
+    public function edit($NIK_user)
+    {
+        // Cek apakah pengguna yang login adalah admin
+        if (Auth::user()->role_id !== 1) {
             return redirect()->route('home')->withErrors(['error' => 'You do not have permission to edit users.']);
         }
 
-        $user = User::find($id);
-        $roles = User::select('role')->distinct()->get();  // Fetch distinct roles from users table
-        return view('admin.edituser', compact('user', 'roles'));  // Pass roles to the view
+        // Ambil data user berdasarkan NIK_user
+        $user = User::where('NIK_user', $NIK_user)->first();
+
+        // Ambil data roles untuk pilihan role
+        $roles = DB::table('roles')->get();
+        
+        return view('admin.edituser', compact('user', 'roles'));
     }
 
-    public function update(Request $request, $id)
+    // Update user data
+    public function update(Request $request, $NIK_user)
     {
         $request->validate([
-            'NIK_user' => 'required|string|max:255|unique:users,NIK_user,' . $id . ',user_id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $id . ',user_id',
-            'role' => 'required|string|in:admin,mip,mitra_kerja,supervisor',
-            'password' => 'nullable|string|min:6',
+            'NIK_user' => 'required|string|max:255|unique:users,NIK_user,' . $NIK_user . ',NIK_user',
+            'name' => 'required|string|max:255|unique:users,name,' . $NIK_user . ',NIK_user',
+            'email' => 'required|email|max:255|unique:users,email,' . $NIK_user . ',NIK_user',
+            'role' => 'required|exists:roles,id_role',
             'status' => 'required|in:0,1',
+            'password' => 'nullable|string|min:6',
         ]);
 
-        // Ambil user berdasarkan user_id
-        $user = User::where('user_id', $id)->first();
-
+        // Ambil data user berdasarkan NIK_user
+        $user = User::where('NIK_user', $NIK_user)->first();
         if (!$user) {
-            return redirect()->back()->with('error', 'User tidak ditemukan.');
+            return redirect()->back()->with('error', 'User not found.');
         }
 
-        // Simpan data yang baru
-        $user->NIK_user = $request->NIK_user;
+        // Cek perubahan role
+        $oldRole = $user->role_id;
+        $newRole = $request->role;
+        $oldStatus = $user->status;
+        $newStatus = $request->status;
+
+        // Jika user ini adalah admin, tidak boleh mengubah role
+        if ($oldRole == 1 && $newRole != 1) {
+            return redirect()->back()->with('error', 'Role admin tidak dapat diubah. Admin harus tetap sebagai admin.');
+        }
+
+        // Jika user ini adalah admin dan akan dinonaktifkan
+        if ($oldRole == 1 && $newStatus == 0) {
+            // Cek apakah ada admin aktif lainnya
+            $otherActiveAdmins = DB::table('users')
+                ->where('role_id', 1)
+                ->where('status', 1)
+                ->where('NIK_user', '!=', $NIK_user)
+                ->count();
+
+            if ($otherActiveAdmins == 0) {
+                return redirect()->back()->with('error', 'Tidak dapat menonaktifkan admin terakhir. Sistem harus memiliki minimal satu admin aktif.');
+            }
+        }
+
+        // Jika user bukan admin dan akan diubah menjadi admin
+        if ($oldRole != 1 && $newRole == 1) {
+            // Cek apakah sudah ada admin aktif
+            $activeAdminCount = DB::table('users')
+                ->where('role_id', 1)
+                ->where('status', 1)
+                ->count();
+
+            if ($activeAdminCount > 0) {
+                return redirect()->back()->with('error', 'Tidak dapat mengubah role menjadi admin. Sistem hanya mengizinkan satu admin aktif.');
+            }
+        }
+
+        // Update data user
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->role = $request->role;
+        
+        // Hanya update role jika user bukan admin atau role tidak berubah
+        if ($oldRole != 1 || $newRole == $oldRole) {
+            $user->role_id = $request->role;
+        }
+        
         $user->status = $request->status;
 
-        // Jika password ada, hash dan update
+        // Update password jika diberikan
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
-        // Simpan perubahan ke database
+        // Simpan perubahan
         $user->save();
 
-        // Jika status berubah menjadi non-aktif dan user sedang login, logout user
-        if ($user->status == 0 && Auth::check() && Auth::user()->user_id == $user->user_id) {
-            Auth::logout(); // Logout user yang sedang login
-            return redirect()->route('login')->with('error', 'Akun Anda dinonaktifkan.');
+        // Jika status menjadi non-aktif dan user yang login adalah yang diubah, logout user
+        if ($user->status == 0 && Auth::check() && Auth::user()->NIK_user == $user->NIK_user) {
+            Auth::logout();
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan.');
         }
 
         return redirect()->route('admin.maintainuser')->with('success', 'User berhasil diperbarui!');
     }
 
-
-
-    public function destroy($user_id)
+    // Delete user
+    public function destroy($NIK_user)
     {
-        // Menghapus user berdasarkan user_id di tabel users
-        $deleted = DB::table('users')->where('user_id', $user_id)->delete();
-    
-        // Redirect dengan pesan sukses atau error
+        // Cek apakah user yang akan dihapus adalah admin
+        $user = DB::table('users')->where('NIK_user', $NIK_user)->first();
+        
+        if (!$user) {
+            return redirect()->route('admin.maintainuser')->with('error', 'User tidak ditemukan.');
+        }
+
+        // Jika user adalah admin, cek apakah ada admin lain
+        if ($user->role_id == 1) {
+            $otherAdmins = DB::table('users')
+                ->where('role_id', 1)
+                ->where('status', 1)
+                ->where('NIK_user', '!=', $NIK_user)
+                ->count();
+
+            if ($otherAdmins == 0) {
+                return redirect()->route('admin.maintainuser')->with('error', 'Tidak dapat menghapus admin terakhir. Sistem harus memiliki minimal satu admin aktif.');
+            }
+        }
+
+        // Delete user
+        $deleted = DB::table('users')->where('NIK_user', $NIK_user)->delete();
+
         if ($deleted) {
-            return redirect()->route('admin.maintainuser')->with('success', 'User berhasil dihapus');
+            return redirect()->route('admin.maintainuser')->with('success', 'User berhasil dihapus!');
         } else {
-            return redirect()->route('admin.maintainuser')->with('error', 'User tidak ditemukan');
+            return redirect()->route('admin.maintainuser')->with('error', 'Gagal menghapus user.');
         }
     }
 }
